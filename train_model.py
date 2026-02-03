@@ -86,14 +86,14 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
                               batch_size=config.batch_size,
                               shuffle=True,
                               worker_init_fn=worker_init_fn,
-                              num_workers=8,
+                              num_workers=0,
                               pin_memory=True)
 
     val_loader = DataLoader(val_dataset,
                             batch_size=config.batch_size,
                             shuffle=True,
                             worker_init_fn=worker_init_fn,
-                            num_workers=8,
+                            num_workers=0,
                             pin_memory=True)
                              
     lr = config.learning_rate
