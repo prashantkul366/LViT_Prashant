@@ -56,11 +56,12 @@ def train_one_epoch(loader, model, criterion, optimizer, writer, epoch, lr_sched
 
         # Take variable and put them to GPU
         images, masks, text = sampled_batch['image'], sampled_batch['label'], sampled_batch['text']
-        if text.shape[1] > 10:
-            text = text[ :, :10, :]
+        # if text.shape[1] > 10:
+        #     text = text[ :, :10, :]
         
-        images, masks, text = images.cuda(), masks.cuda(), text.cuda()
-
+        # images, masks, text = images.cuda(), masks.cuda(), text.cuda()
+        images = images.cuda()
+        masks  = masks.cuda()
 
         # ====================================================
         #             Compute loss
