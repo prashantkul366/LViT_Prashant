@@ -179,6 +179,7 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
                                  'state_dict': model.state_dict(),
                                  'val_loss': val_loss,
                                  'optimizer': optimizer.state_dict()}, config.model_path)
+                print("Best Model path at epoch {}: {}".format(best_epoch, config.model_path))
         else:
             logger.info('\t Mean dice:{:.4f} does not increase, '
                         'the best is still: {:.4f} in epoch {}'.format(val_dice, max_dice, best_epoch))
