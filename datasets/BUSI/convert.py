@@ -5,9 +5,11 @@ import csv
 # json_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\train.json"
 # csv_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\train_data.csv"
 
-json_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\val.json"
-csv_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\val_data.csv"
+# json_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\val.json"
+# csv_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\val_data.csv"
 
+json_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\test.json"
+csv_path = r"C:\Users\ve00yn139\OneDrive - YAMAHA MOTOR CO., LTD\Desktop\Unext_skip\LViT_Prashant\datasets\BUSI\test_data.csv"
 # -------- LOAD JSON --------
 with open(json_path, "r") as f:
     data = json.load(f)

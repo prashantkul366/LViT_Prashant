@@ -64,3 +64,4 @@ def get_CTranS_config():
 
 # used in testing phase, copy the session name in training phase
 # test_session = "Test_session_05.23_14h19"  # dice=79.98, IoU=66.83
+test_session = "Test_session_02.03_06h12"
