@@ -47,7 +47,7 @@ def show_image_with_dice(predict_save, labs, save_path):
 def vis_and_save_heatmap(model, input_img, text, img_RGB, labs, vis_save_path, dice_pred, dice_ens):
     model.eval()
 
-    output = model(input_img.cuda(), text.cuda())
+    output = model(input_img.cuda(), text)
     pred_class = torch.where(output > 0.5, torch.ones_like(output), torch.zeros_like(output))
     predict_save = pred_class[0].cpu().data.numpy()
     predict_save = np.reshape(predict_save, (config.img_size, config.img_size))
@@ -107,11 +107,18 @@ if __name__ == '__main__':
     with tqdm(total=test_num, desc='Test visualize', unit='img', ncols=70, leave=True) as pbar:
         for i, (sampled_batch, names) in enumerate(test_loader, 1):
             # print(names)
-            test_data, test_label, test_text = sampled_batch['image'], sampled_batch['label'], sampled_batch['text']
-            arr = test_data.numpy()
-            arr = arr.astype(np.float32())
-            lab = test_label.data.numpy()
+            # test_data, test_label, test_text = sampled_batch['image'], sampled_batch['label'], sampled_batch['text']
+            test_data  = sampled_batch['image']
+            test_label = sampled_batch['label']
+            test_text  = sampled_batch['text']  
+
+            # arr = test_data.numpy()
+            # arr = arr.astype(np.float32())
+            # lab = test_label.data.numpy()
+            # img_lab = np.reshape(lab, (lab.shape[1], lab.shape[2])) * 255
+            lab = test_label.cpu().numpy()
             img_lab = np.reshape(lab, (lab.shape[1], lab.shape[2])) * 255
+
             fig, ax = plt.subplots()
             plt.imshow(img_lab, cmap='gray')
             plt.axis("off")
@@ -123,7 +130,8 @@ if __name__ == '__main__':
             plt.margins(0, 0)
             plt.savefig(vis_path + str(names) + "_lab.jpg", dpi=300)
             plt.close()
-            input_img = torch.from_numpy(arr)
+            # input_img = torch.from_numpy(arr)
+            input_img = test_data.cuda()
             dice_pred_t, iou_pred_t = vis_and_save_heatmap(model, input_img, test_text, None, lab,
                                                            vis_path + str(names),
                                                            dice_pred=dice_pred, dice_ens=dice_ens)
