@@ -6,6 +6,43 @@ import torch.nn.functional as F
 from .Vit import VisionTransformer, Reconstruct
 from .pixlevel import PixLevelModule
 
+from transformers import AutoTokenizer, AutoModel
+
+class ClinicalTextEncoder(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.tokenizer = AutoTokenizer.from_pretrained("medicalai/ClinicalBERT")
+        self.encoder = AutoModel.from_pretrained("medicalai/ClinicalBERT")
+
+        for p in self.encoder.parameters():
+            p.requires_grad = False  # freeze
+
+    def forward(self, texts):
+        """
+        texts: list[str], length = B
+        """
+        tokens = self.tokenizer(
+            texts,
+            padding=True,
+            truncation=True,
+            max_length=128,
+            return_tensors="pt"
+        ).to(next(self.encoder.parameters()).device)
+
+        out = self.encoder(**tokens)
+        return out.last_hidden_state.mean(dim=1)  # (B, 768)
+
+class FiLM(torch.nn.Module):
+    def __init__(self, img_channels, text_dim=768):
+        super().__init__()
+        self.gamma = torch.nn.Linear(text_dim, img_channels)
+        self.beta = torch.nn.Linear(text_dim, img_channels)
+
+    def forward(self, x, t):
+        gamma = self.gamma(t).unsqueeze(-1).unsqueeze(-1)
+        beta = self.beta(t).unsqueeze(-1).unsqueeze(-1)
+        return x * (1 + gamma) + beta
+
 
 def get_activation(activation_type):
     activation_type = activation_type.lower()
@@ -75,6 +112,7 @@ class LViT(nn.Module):
     def __init__(self, config, n_channels=3, n_classes=1, img_size=224, vis=False):
         super().__init__()
         self.vis = vis
+        self.text_encoder = ClinicalTextEncoder()
         self.n_channels = n_channels
         self.n_classes = n_classes
         in_channels = config.base_channel
@@ -112,9 +150,13 @@ class LViT(nn.Module):
         self.text_module1 = nn.Conv1d(in_channels=128, out_channels=64, kernel_size=3, padding=1)
 
         print("LViT model created successfully!")
-        
+
     def forward(self, x, text):
         x = x.float()  # x [4,3,224,224]
+
+        text_emb = self.text_encoder(text)      # (B, 768)
+        text = text_emb.unsqueeze(1)            # (B, 1, 768)
+        
         x1 = self.inc(x)  # x1 [4, 64, 224, 224]
         text4 = self.text_module4(text.transpose(1, 2)).transpose(1, 2) 
         text3 = self.text_module3(text4.transpose(1, 2)).transpose(1, 2)
