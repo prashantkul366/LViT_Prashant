@@ -50,7 +50,7 @@ class RandomGenerator(object):
             label = zoom(label, (self.output_size[0] / x, self.output_size[1] / y), order=0)
         image = F.to_tensor(image)
         label = to_long_tensor(label)
-        text = torch.Tensor(text)
+        # text = torch.Tensor(text)
         sample = {'image': image, 'label': label, 'text': text}
         return sample
 
@@ -69,7 +69,7 @@ class ValGenerator(object):
             label = zoom(label, (self.output_size[0] / x, self.output_size[1] / y), order=0)
         image = F.to_tensor(image)
         label = to_long_tensor(label)
-        text = torch.Tensor(text)
+        # text = torch.Tensor(text)
         sample = {'image': image, 'label': label, 'text': text}
         return sample
 
