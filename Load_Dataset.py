@@ -154,7 +154,9 @@ class ImageToImage2D(Dataset):
         self.rowtext = row_text
         self.task_name = task_name
         self.bert_embedding = BertEmbedding()
-
+        
+        print("Dataset path:", dataset_path)
+        print("Number of images found:", len(self.images_list))
         if joint_transform:
             self.joint_transform = joint_transform
         else:
