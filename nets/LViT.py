@@ -154,9 +154,17 @@ class LViT(nn.Module):
     def forward(self, x, text):
         x = x.float()  # x [4,3,224,224]
 
-        text_emb = self.text_encoder(text)      # (B, 768)
-        text = text_emb.unsqueeze(1)            # (B, 1, 768)
-        
+        if isinstance(text, torch.Tensor):
+            B = x.shape[0]
+            device = x.device
+            text = torch.zeros(B, 1, 768, device=device)
+        else:
+            with torch.no_grad():
+                text_emb = self.text_encoder(text)   # (B, 768)
+            text = text_emb.unsqueeze(1)             # (B, 1, 768)
+        # text_emb = self.text_encoder(text)      # (B, 768)
+        # text = text_emb.unsqueeze(1)            # (B, 1, 768)
+
         x1 = self.inc(x)  # x1 [4, 64, 224, 224]
         text4 = self.text_module4(text.transpose(1, 2)).transpose(1, 2) 
         text3 = self.text_module3(text4.transpose(1, 2)).transpose(1, 2)
