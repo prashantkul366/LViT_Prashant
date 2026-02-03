@@ -16,7 +16,7 @@ from Train_one_epoch import train_one_epoch, print_summary
 import Config as config
 from torchvision import transforms
 from utils import CosineAnnealingWarmRestarts, WeightedDiceBCE, WeightedDiceCE, read_text, read_text_LV, save_on_batch
-from thop import profile
+# from thop import profile
 
 def logger_config(log_path):
     loggerr = logging.getLogger()
@@ -126,9 +126,9 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
         raise TypeError('Please enter a valid name for the model type')
     input = torch.randn(2, 3, 224, 224)
     text = torch.randn(2, 10, 768)
-    flops, params = profile(model, inputs=(input, text, ))
-    print('flops:{}'.format(flops))
-    print('params:{}'.format(params))
+    # flops, params = profile(model, inputs=(input, text, ))
+    # print('flops:{}'.format(flops))
+    # print('params:{}'.format(params))
     model = model.cuda()
     if torch.cuda.device_count() > 1:
         print("Let's use {0} GPUs!".format(torch.cuda.device_count()))
