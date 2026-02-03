@@ -10,9 +10,31 @@ from typing import Callable
 import os
 import cv2
 from scipy import ndimage
-from bert_embedding import BertEmbedding
+# from bert_embedding import BertEmbedding
+from transformers import AutoTokenizer, AutoModel
 
 
+class TextEncoder:
+    def __init__(self, model_name="emilyalsentzer/Bio_ClinicalBERT", device=None):
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        self.model.eval()
+
+    @torch.no_grad()
+    def encode(self, texts, max_len=32):
+        tokens = self.tokenizer(
+            texts,
+            padding=True,
+            truncation=True,
+            max_length=max_len,
+            return_tensors="pt"
+        ).to(self.device)
+
+        outputs = self.model(**tokens)
+        return outputs.last_hidden_state
+
+    
 def random_rot_flip(image, label):
     k = np.random.randint(0, 4)
     image = np.rot90(image, k)
@@ -105,7 +127,8 @@ class LV2D(Dataset):
         self.one_hot_mask = one_hot_mask
         self.rowtext = row_text
         self.task_name = task_name
-        self.bert_embedding = BertEmbedding()
+        # self.bert_embedding = BertEmbedding()
+        self.text_encoder = TextEncoder()
 
         if joint_transform:
             self.joint_transform = joint_transform
@@ -125,9 +148,15 @@ class LV2D(Dataset):
         mask[mask > 0] = 1
         mask = correct_dims(mask)
         text = self.rowtext[mask_filename]
+
+        # text = text.split('\n')
+        # text_token = self.bert_embedding(text)
+        # text = np.array(text_token[0][1])
+
         text = text.split('\n')
-        text_token = self.bert_embedding(text)
-        text = np.array(text_token[0][1])
+        text_emb = self.text_encoder.encode(text)   # (N, L, 768)
+        text = text_emb.mean(dim=1).cpu().numpy()   # (N, 768)
+
         if text.shape[0] > 14:
             text = text[:14, :]
         if self.one_hot_mask:
@@ -153,8 +182,9 @@ class ImageToImage2D(Dataset):
         self.one_hot_mask = one_hot_mask
         self.rowtext = row_text
         self.task_name = task_name
-        self.bert_embedding = BertEmbedding()
-        
+        # self.bert_embedding = BertEmbedding()
+        self.text_encoder = TextEncoder()
+
         print("Dataset path:", dataset_path)
         print("Number of images found:", len(self.images_list))
         if joint_transform:
@@ -184,11 +214,13 @@ class ImageToImage2D(Dataset):
         # correct dimensions if needed
         image, mask = correct_dims(image, mask)
         text = self.rowtext[mask_filename]
+
         text = text.split('\n')
-        text_token = self.bert_embedding(text)
-        text = np.array(text_token[0][1])
+        text_emb = self.text_encoder.encode(text)   # (N, L, 768)
+        text = text_emb.mean(dim=1).cpu().numpy()   # (N, 768)
+
         if text.shape[0] > 10:
-            text = text[:10, :]
+            text = text[:10]
 
         if self.one_hot_mask:
             assert self.one_hot_mask > 0, 'one_hot_mask must be nonnegative'
