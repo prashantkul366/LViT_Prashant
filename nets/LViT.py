@@ -155,7 +155,8 @@ class LViT(nn.Module):
         x = x.float()  # x [4,3,224,224]
 
         text_emb = self.text_encoder(text)      # (B, 768)
-        text = text_emb.unsqueeze(1)            # (B, 1, 768)
+        # text = text_emb.unsqueeze(1)            # (B, 1, 768)
+        text = text_emb.unsqueeze(1).repeat(1, 10, 1)   # (B, 10, 768)
 
         x1 = self.inc(x)  # x1 [4, 64, 224, 224]
         text4 = self.text_module4(text.transpose(1, 2)).transpose(1, 2) 
