@@ -9,7 +9,12 @@ import random
 from torch.backends import cudnn
 import Config
 from Load_Dataset import RandomGenerator, ValGenerator, ImageToImage2D, LV2D
+##############################################################################
 from nets.LViT import LViT
+from nets.LViT_MT import LViT_MT
+
+
+##############################################################################
 from torch.utils.data import DataLoader
 import logging
 from Train_one_epoch import train_one_epoch, print_summary
@@ -100,6 +105,13 @@ def main_loop(batch_size=config.batch_size, model_type='', tensorboard=True):
     logger.info(model_type)
 
     if model_type == 'LViT':
+        config_vit = config.get_CTranS_config()
+        logger.info('transformer head num: {}'.format(config_vit.transformer.num_heads))
+        logger.info('transformer layers num: {}'.format(config_vit.transformer.num_layers))
+        logger.info('transformer expand ratio: {}'.format(config_vit.expand_ratio))
+        model = LViT(config_vit, n_channels=config.n_channels, n_classes=config.n_labels)
+
+    elif model_type == 'LViT_MT':
         config_vit = config.get_CTranS_config()
         logger.info('transformer head num: {}'.format(config_vit.transformer.num_heads))
         logger.info('transformer layers num: {}'.format(config_vit.transformer.num_layers))

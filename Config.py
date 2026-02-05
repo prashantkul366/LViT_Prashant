@@ -28,7 +28,8 @@ task_name = 'MoNuSeg'
 learning_rate = 1e-3  # MoNuSeg: 1e-3, Covid19: 3e-4
 batch_size = 2  # For LViT-T, 2 is better than 4
 
-model_name = 'LViT'
+# model_name = 'LViT'
+model_name = 'LViT_MT'
 # model_name = 'LViT_pretrain'
 
 train_dataset = './datasets/' + task_name + '/Train_Folder/'
@@ -64,4 +65,4 @@ def get_CTranS_config():
 
 # used in testing phase, copy the session name in training phase
 # test_session = "Test_session_05.23_14h19"  # dice=79.98, IoU=66.83
-test_session = "Test_session_02.03_06h12"
+# test_session = "Test_session_02.03_06h12"

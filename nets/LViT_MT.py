@@ -108,7 +108,7 @@ class UpblockAttention(nn.Module):
         return self.nConvs(x)
 
 
-class LViT(nn.Module):
+class LViT_MT(nn.Module):
     def __init__(self, config, n_channels=3, n_classes=1, img_size=224, vis=False):
         super().__init__()
         self.vis = vis
@@ -149,82 +149,40 @@ class LViT(nn.Module):
         self.text_module2 = nn.Conv1d(in_channels=256, out_channels=128, kernel_size=3, padding=1)
         self.text_module1 = nn.Conv1d(in_channels=128, out_channels=64, kernel_size=3, padding=1)
 
-        print("LViT model created successfully!")
+        print("LViT model with Transformer-Mamba Block as Encoder created successfully!")
 
     def forward(self, x, text):
         x = x.float()  # x [4,3,224,224]
-        print("Input image x :", x.shape)   # (B,3,224,224)
 
         text_emb = self.text_encoder(text)      # (B, 768)
-        print("Text embedding :", text_emb.shape)   # (B,768)
         # text = text_emb.unsqueeze(1)            # (B, 1, 768)
         text = text_emb.unsqueeze(1).repeat(1, 10, 1)   # (B, 10, 768)
-        print("Expanded text  :", text.shape)       # (B,10,768)
 
         x1 = self.inc(x)  # x1 [4, 64, 224, 224]
-        print(f"x1 after initial conv       : {x1.shape}")
-
         text4 = self.text_module4(text.transpose(1, 2)).transpose(1, 2) 
-        print(f"text4 (for deepest ViT)     : {text4.shape}") 
         text3 = self.text_module3(text4.transpose(1, 2)).transpose(1, 2)
-        print(f"text3                       : {text3.shape}")
         text2 = self.text_module2(text3.transpose(1, 2)).transpose(1, 2)
-        print(f"text2                       : {text2.shape}")
         text1 = self.text_module1(text2.transpose(1, 2)).transpose(1, 2)
-        print(f"text1 (for shallow ViT)     : {text1.shape}")
-
         y1 = self.downVit(x1, x1, text1)
-        print(f"y1 (DownViT stage1)         : {y1.shape}")
         x2 = self.down1(x1)
-        print(f"x2 (CNN down1)              : {x2.shape}")
-
         y2 = self.downVit1(x2, y1, text2)
-        print(f"y2 (DownViT stage2)         : {y2.shape}")
         x3 = self.down2(x2)
-        print(f"x3 (CNN down2)              : {x3.shape}")
-
         y3 = self.downVit2(x3, y2, text3)
-        print(f"y3 (DownViT stage3)         : {y3.shape}")
         x4 = self.down3(x3)
-        print(f"x4 (CNN down3)              : {x4.shape}")
-
         y4 = self.downVit3(x4, y3, text4)
-        print(f"y4 (DownViT stage4)         : {y4.shape}")
         x5 = self.down4(x4)
-        print(f"x5 (CNN bottleneck)         : {x5.shape}")
-
         y4 = self.upVit3(y4, y4, text4, True)
-        print(f"y4 (UpViT stage4)           : {y4.shape}")
         y3 = self.upVit2(y3, y4, text3, True)
-        print(f"y3 (UpViT stage3)           : {y3.shape}")
         y2 = self.upVit1(y2, y3, text2, True)
-        print(f"y2 (UpViT stage2)           : {y2.shape}")
         y1 = self.upVit(y1, y2, text1, True)
-        print(f"y1 (UpViT stage1)           : {y1.shape}")
-
-
         x1 = self.reconstruct1(y1) + x1
-        print(f"x1 after reconstruct fusion : {x1.shape}")
-
         x2 = self.reconstruct2(y2) + x2
-        print(f"x2 after reconstruct fusion : {x2.shape}")
-
         x3 = self.reconstruct3(y3) + x3
-        print(f"x3 after reconstruct fusion : {x3.shape}")
-
         x4 = self.reconstruct4(y4) + x4
-        print(f"x4 after reconstruct fusion : {x4.shape}")
-
         x = self.up4(x5, x4)
-        print(f"Decoder up4 output          : {x.shape}")
         x = self.up3(x, x3)
-        print(f"Decoder up3 output          : {x.shape}")
         x = self.up2(x, x2)
-        print(f"Decoder up2 output          : {x.shape}")
         x = self.up1(x, x1)
-        print(f"Decoder up1 output          : {x.shape}")
-
-        
         if self.n_classes == 1:
             logits = self.last_activation(self.outc(x))
         else:
