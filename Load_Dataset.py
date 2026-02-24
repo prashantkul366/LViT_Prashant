@@ -155,15 +155,38 @@ class ImageToImage2D(Dataset):
         self.output_path = os.path.join(dataset_path, 'masks')
         # self.images_list = os.listdir(self.input_path)
         # self.mask_list = os.listdir(self.output_path)
-        self.images_list = []
         all_images = os.listdir(self.input_path)
-        all_masks  = set(os.listdir(self.output_path))
+        all_masks  = os.listdir(self.output_path)
+
+        print("\n===== DATASET DEBUG INFO =====")
+        print("Dataset path:", dataset_path)
+        print("Total images found:", len(all_images))
+        print("Total masks found :", len(all_masks))
+
+        self.images_list = []
+        missing_masks = []
+        missing_texts = []
 
         for img in all_images:
             if img in all_masks:
-                self.images_list.append(img)
+                if img in self.rowtext:
+                    self.images_list.append(img)
+                else:
+                    missing_texts.append(img)
+            else:
+                missing_masks.append(img)
 
-        print("Total valid samples:", len(self.images_list))
+        print("Valid image-mask-text pairs:", len(self.images_list))
+        print("Images missing masks:", len(missing_masks))
+        print("Images missing text:", len(missing_texts))
+
+        if len(missing_masks) > 0:
+            print("Example missing mask:", missing_masks[:5])
+
+        if len(missing_texts) > 0:
+            print("Example missing text:", missing_texts[:5])
+
+        print("================================\n")
 
         self.one_hot_mask = one_hot_mask
         self.rowtext = row_text
