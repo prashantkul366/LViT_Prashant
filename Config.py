@@ -24,7 +24,8 @@ early_stopping_patience = 100
 
 pretrain = False
 # task_name = 'MoNuSeg' 
-task_name = 'BUSI_80-20_text' 
+# task_name = 'BUSI_80-20_text' 
+task_name = 'Kvasir_80_20_Text'
 # task_name = 'Covid19'
 learning_rate = 1e-3  # MoNuSeg: 1e-3, Covid19: 3e-4
 batch_size = 2  # For LViT-T, 2 is better than 4
@@ -43,6 +44,12 @@ task_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_8
 train_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/train'
 val_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/test'
 test_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/test'
+
+# Kvasir_80_20_Text
+task_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Kvasir_80_20_TEXT_NEW/train'
+train_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Kvasir_80_20_TEXT_NEW/train'
+val_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Kvasir_80_20_TEXT_NEW/val'
+test_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Kvasir_80_20_TEXT_NEW/val'
 
 session_name = 'Test_session' + '_' + time.strftime('%m.%d_%Hh%M')
 save_path = task_name + '/' + model_name + '/' + session_name + '/'

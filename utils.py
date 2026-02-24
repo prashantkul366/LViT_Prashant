@@ -541,8 +541,10 @@ def read_text(filename):
 
     # Adjust to your BUSI format
     for i in df.index.values:
-        desc = df['Text'][i]
-        img_name = df['Filename'][i]
+        # desc = df['Text'][i]
+        # img_name = df['Filename'][i]
+        desc = df['image_name'][i]
+        img_name = df['prompt_text'][i]
 
         count = len(desc.split())
         if count < 9:

@@ -227,8 +227,19 @@ class ImageToImage2D(Dataset):
         missing_masks = []
         missing_texts = []
 
+        # for img in all_images:
+        #     if img in all_masks:
+        #         if img in self.rowtext:
+        #             self.images_list.append(img)
+        #         else:
+        #             missing_texts.append(img)
+        #     else:
+        #         missing_masks.append(img)
+
         for img in all_images:
-            if img in all_masks:
+            mask_name = os.path.splitext(img)[0] + ".png"
+
+            if mask_name in all_masks:
                 if img in self.rowtext:
                     self.images_list.append(img)
                 else:
@@ -264,7 +275,10 @@ class ImageToImage2D(Dataset):
 
         image_filename = self.images_list[idx]  # MoNuSeg
         # mask_filename = image_filename[: -3] + "png"  # MoNuSeg
-        mask_filename = image_filename
+
+        # mask_filename = image_filename
+        mask_filename = os.path.splitext(image_filename)[0] + ".png"
+
         # mask_filename = self.mask_list[idx]  # Covid19
         # image_filename = mask_filename.replace('mask_', '')  # Covid19
         image = cv2.imread(os.path.join(self.input_path, image_filename))
@@ -285,7 +299,8 @@ class ImageToImage2D(Dataset):
         # if text.shape[0] > 10:
         #     text = text[:10, :]
 
-        text = self.rowtext[mask_filename]   # raw string
+        # text = self.rowtext[mask_filename]   # raw string
+        text = self.rowtext[image_filename]
 
         if self.one_hot_mask:
             assert self.one_hot_mask > 0, 'one_hot_mask must be nonnegative'
