@@ -142,19 +142,79 @@ class LV2D(Dataset):
         return sample, mask_filename
 
 
+# class ImageToImage2D(Dataset):
+
+#     def __init__(self, dataset_path: str, task_name: str, row_text: str, joint_transform: Callable = None,
+#                  one_hot_mask: int = False,
+#                  image_size: int = 224) -> None:
+#         self.dataset_path = dataset_path
+#         self.image_size = image_size
+#         # self.input_path = os.path.join(dataset_path, 'img')
+#         # self.output_path = os.path.join(dataset_path, 'labelcol')
+#         self.input_path = os.path.join(dataset_path, 'images')
+#         self.output_path = os.path.join(dataset_path, 'masks')
+#         # self.images_list = os.listdir(self.input_path)
+#         # self.mask_list = os.listdir(self.output_path)
+#         all_images = os.listdir(self.input_path)
+#         all_masks  = os.listdir(self.output_path)
+
+#         print("\n===== DATASET DEBUG INFO =====")
+#         print("Dataset path:", dataset_path)
+#         print("Total images found:", len(all_images))
+#         print("Total masks found :", len(all_masks))
+
+#         self.images_list = []
+#         missing_masks = []
+#         missing_texts = []
+
+#         for img in all_images:
+#             if img in all_masks:
+#                 if img in self.rowtext:
+#                     self.images_list.append(img)
+#                 else:
+#                     missing_texts.append(img)
+#             else:
+#                 missing_masks.append(img)
+
+#         print("Valid image-mask-text pairs:", len(self.images_list))
+#         print("Images missing masks:", len(missing_masks))
+#         print("Images missing text:", len(missing_texts))
+
+#         if len(missing_masks) > 0:
+#             print("Example missing mask:", missing_masks[:5])
+
+#         if len(missing_texts) > 0:
+#             print("Example missing text:", missing_texts[:5])
+
+#         print("================================\n")
+
+#         self.one_hot_mask = one_hot_mask
+#         self.rowtext = row_text
+#         self.task_name = task_name
+#         # self.bert_embedding = BertEmbedding()
+
+#         if joint_transform:
+#             self.joint_transform = joint_transform
+#         else:
+#             to_tensor = T.ToTensor()
+#             self.joint_transform = lambda x, y: (to_tensor(x), to_tensor(y))
+
 class ImageToImage2D(Dataset):
 
-    def __init__(self, dataset_path: str, task_name: str, row_text: str, joint_transform: Callable = None,
+    def __init__(self, dataset_path: str, task_name: str, row_text: str,
+                 joint_transform: Callable = None,
                  one_hot_mask: int = False,
                  image_size: int = 224) -> None:
+
         self.dataset_path = dataset_path
         self.image_size = image_size
-        # self.input_path = os.path.join(dataset_path, 'img')
-        # self.output_path = os.path.join(dataset_path, 'labelcol')
         self.input_path = os.path.join(dataset_path, 'images')
         self.output_path = os.path.join(dataset_path, 'masks')
-        # self.images_list = os.listdir(self.input_path)
-        # self.mask_list = os.listdir(self.output_path)
+
+        self.rowtext = row_text   # ✅ MOVE THIS HERE
+        self.task_name = task_name
+        self.one_hot_mask = one_hot_mask
+
         all_images = os.listdir(self.input_path)
         all_masks  = os.listdir(self.output_path)
 
@@ -188,19 +248,17 @@ class ImageToImage2D(Dataset):
 
         print("================================\n")
 
-        self.one_hot_mask = one_hot_mask
-        self.rowtext = row_text
-        self.task_name = task_name
-        # self.bert_embedding = BertEmbedding()
-
         if joint_transform:
             self.joint_transform = joint_transform
         else:
             to_tensor = T.ToTensor()
             self.joint_transform = lambda x, y: (to_tensor(x), to_tensor(y))
 
+            
+    # def __len__(self):
+    #     return len(os.listdir(self.input_path))
     def __len__(self):
-        return len(os.listdir(self.input_path))
+        return len(self.images_list)
 
     def __getitem__(self, idx):
 
