@@ -535,22 +535,44 @@ class CosineAnnealingWarmRestarts(_LRScheduler):
 #         text[df.Image[i]] = df.Description[i]
 #     return text  # return dict (key: values)
 
+# def read_text(filename):
+#     df = pd.read_excel(filename)
+#     text = {}
+
+#     # Adjust to your BUSI format
+#     for i in df.index.values:
+#         # desc = df['Text'][i]
+#         # img_name = df['Filename'][i]
+#         desc = df['image_name'][i]
+#         img_name = df['prompt_text'][i]
+
+#         count = len(desc.split())
+#         if count < 9:
+#             desc = desc + ' EOF XXX' * (9 - count)
+
+#         text[img_name] = desc
+
+#     return text
+
+
 def read_text(filename):
     df = pd.read_excel(filename)
     text = {}
 
-    # Adjust to your BUSI format
+    print("Excel columns:", df.columns)
+
     for i in df.index.values:
-        # desc = df['Text'][i]
-        # img_name = df['Filename'][i]
-        desc = df['image_name'][i]
-        img_name = df['prompt_text'][i]
+        img_name = df['image_name'][i].strip()
+        desc = df['prompt_text'][i]
 
         count = len(desc.split())
         if count < 9:
             desc = desc + ' EOF XXX' * (9 - count)
 
         text[img_name] = desc
+
+    print("Total text entries loaded:", len(text))
+    print("Example keys:", list(text.keys())[:5])
 
     return text
 
