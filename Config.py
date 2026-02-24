@@ -17,9 +17,9 @@ n_channels = 3
 n_labels = 1  # MoNuSeg & Covid19
 epochs = 1000
 img_size = 224
-print_frequency = 1
+print_frequency = 200
 save_frequency = 5000
-vis_frequency = 10
+vis_frequency = 100
 early_stopping_patience = 100
 
 pretrain = False
