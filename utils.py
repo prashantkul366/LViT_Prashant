@@ -525,16 +525,32 @@ class CosineAnnealingWarmRestarts(_LRScheduler):
         self._last_lr = [group['lr'] for group in self.optimizer.param_groups]
 
 
+# def read_text(filename):
+#     df = pd.read_excel(filename)
+#     text = {}
+#     for i in df.index.values:  # Gets the index of the row number and traverses it
+#         count = len(df.Description[i].split())
+#         if count < 9:
+#             df.Description[i] = df.Description[i] + ' EOF XXX' * (9 - count)
+#         text[df.Image[i]] = df.Description[i]
+#     return text  # return dict (key: values)
+
 def read_text(filename):
     df = pd.read_excel(filename)
     text = {}
-    for i in df.index.values:  # Gets the index of the row number and traverses it
-        count = len(df.Description[i].split())
-        if count < 9:
-            df.Description[i] = df.Description[i] + ' EOF XXX' * (9 - count)
-        text[df.Image[i]] = df.Description[i]
-    return text  # return dict (key: values)
 
+    # Adjust to your BUSI format
+    for i in df.index.values:
+        desc = df['Text'][i]
+        img_name = df['Filename'][i]
+
+        count = len(desc.split())
+        if count < 9:
+            desc = desc + ' EOF XXX' * (9 - count)
+
+        text[img_name] = desc
+
+    return text
 
 def read_text_LV(filename):
     df = pd.read_excel(filename)

@@ -15,15 +15,16 @@ os.environ['PYTHONHASHSEED'] = str(seed)
 cosineLR = True  # Use cosineLR or not
 n_channels = 3
 n_labels = 1  # MoNuSeg & Covid19
-epochs = 2000
+epochs = 1000
 img_size = 224
 print_frequency = 1
 save_frequency = 5000
 vis_frequency = 10
-early_stopping_patience = 50
+early_stopping_patience = 100
 
 pretrain = False
-task_name = 'MoNuSeg' 
+# task_name = 'MoNuSeg' 
+task_name = 'BUSI_80-20_text' 
 # task_name = 'Covid19'
 learning_rate = 1e-3  # MoNuSeg: 1e-3, Covid19: 3e-4
 batch_size = 2  # For LViT-T, 2 is better than 4
@@ -36,6 +37,13 @@ train_dataset = './datasets/' + task_name + '/Train_Folder/'
 val_dataset = './datasets/' + task_name + '/Val_Folder/'
 test_dataset = './datasets/' + task_name + '/Test_Folder/'
 task_dataset = './datasets/' + task_name + '/Train_Folder/'
+
+
+task_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/train'
+train_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/train'
+val_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/test'
+test_dataset = '/content/drive/MyDrive/Prashant/research_datasets/Dataset_BUSI_80_20_TEXT_NEW/test'
+
 session_name = 'Test_session' + '_' + time.strftime('%m.%d_%Hh%M')
 save_path = task_name + '/' + model_name + '/' + session_name + '/'
 model_path = save_path + 'models/'
