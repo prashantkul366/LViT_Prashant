@@ -11,7 +11,7 @@ import Config
 from Load_Dataset import RandomGenerator, ValGenerator, ImageToImage2D, LV2D
 ##############################################################################
 from nets.LViT import LViT
-from nets.LViT_MT import LViT_MT
+# from nets.LViT_MT import LViT_MT
 
 
 ##############################################################################
